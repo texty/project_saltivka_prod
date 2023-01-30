@@ -117,6 +117,10 @@
             margin-left: 0.5vw !important;
             margin-right: 0.5vw !important;
         }
+        figcaption {
+            margin-left: 0.5vw !important;
+            margin-right: 0.5vw !important;
+        }
         #infoboard {
             padding-top: 1vh !important;
         }
@@ -204,6 +208,10 @@
         }
         figure img {
             width: 99vw !important;
+            margin-left: 0.5vw !important;
+            margin-right: 0.5vw !important;
+        }
+        figcaption {
             margin-left: 0.5vw !important;
             margin-right: 0.5vw !important;
         }
@@ -513,6 +521,7 @@
     }
     
     figcaption {
+        margin-right: 25vw;
         margin-left: 25vw;
         font-family: "proxima";
         font-size: calc(8px + 0.5vw);
