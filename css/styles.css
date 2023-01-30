@@ -399,6 +399,7 @@
     }
     
     .title-wrapper h3 {
+        font-family: 'proxima-bold';
         color: white;
         text-transform: none;
         text-align: center;
