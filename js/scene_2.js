@@ -35,7 +35,11 @@ window.onload = function() {
     var scene = new THREE.Scene()
     scene.background = new THREE.Color(0xffffff);
     const camera = new THREE.PerspectiveCamera(45, container.getBoundingClientRect().width / container.getBoundingClientRect().height, 1, 200);
-    camera.position.set(10, 22, -45);
+    camera.position.set(-16.62999593223956, 18.931333503926282, -44.39571128567188);
+
+    // -16.766358626702264, y: 17.89839741567356, z: -44.75974738274429
+
+    // -16.62999593223956, y: 18.931333503926282, z: -44.39571128567188}
 
     var Ambientlight = new THREE.AmbientLight(0xffffff, 0.7)
     scene.add(Ambientlight)
@@ -92,8 +96,17 @@ window.onload = function() {
     controls.minDistance = 30
     controls.maxDistance = 60
 
-    controls.minPolarAngle = 0.7
-    controls.maxPolarAngle = 1.3
+    // controls.minPolarAngle = 0.7 
+    // controls.maxPolarAngle = 1.3
+
+    controls.minPolarAngle = 1.2
+    controls.maxPolarAngle = 1.2
+
+    // controls.maxAzimuthAngle = 3.7
+    // controls.minAzimuthAngle = 3.4
+
+    controls.maxAzimuthAngle = 3.5
+    controls.minAzimuthAngle = 3.5
 
     const loader = new GLTFLoader();
     loader.load(
@@ -219,7 +232,7 @@ window.onload = function() {
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         }
-        // console.log(controls.getPolarAngle())
+        // console.log(controls.getAzimuthAngle())
         // cameraPole.rotation.y = time * .1;
         // , time
         // pickHelper.pick(pickPosition, scene, camera);
