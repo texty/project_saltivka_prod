@@ -389,7 +389,7 @@
     
     h1.title {
         color: white;
-        font: "proxima-bold";
+        font-family: "proxima-bold";
         font-size: calc(50px + 1.5vw);
         font-weight: 800;
         letter-spacing: 5px;
