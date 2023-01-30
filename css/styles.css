@@ -524,6 +524,7 @@
         font-style: italic;
         margin-left: 20vw;
         margin-right: 20vw;
+        font-family: 'proxima';
         font-size: calc(14px + 0.5vw);
     }
     
