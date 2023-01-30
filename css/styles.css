@@ -367,7 +367,8 @@
         width: 100vw;
         opacity: 30%;
         z-index: 1;
-        margin-left: -1vw
+        margin-left: -1vw;
+        margin-top: -1vh;
     }
     
     #main-header {
@@ -578,4 +579,93 @@
     
     #end-text {
         text-align: center;
+    }
+    
+    .share-btn {
+        font-family: 'Noto Sans', sans-serif;
+        letter-spacing: 1px;
+        text-align: center;
+        line-height: 1.6;
+    }
+    
+    .fa-facebook {
+        letter-spacing: 1px;
+        text-align: center;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        font-family: "Font Awesome 5 Brands";
+        box-sizing: content-box;
+        margin: 0.5em;
+        cursor: pointer;
+        width: 1em;
+        height: 1em;
+        border: 1px solid #616161;
+        color: #a6a6a6;
+        border-radius: 50%;
+        padding: 0.5em;
+        font-size: 2.0em;
+        line-height: 1;
+        transition: all 0.5s;
+        stroke: white;
+    }
+    
+    .fa-twitter {
+        letter-spacing: 1px;
+        text-align: center;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        font-family: "Font Awesome 5 Brands";
+        box-sizing: content-box;
+        margin: 0.5em;
+        cursor: pointer;
+        width: 1em;
+        height: 1em;
+        border: 1px solid #616161;
+        color: #a6a6a6;
+        border-radius: 50%;
+        padding: 0.5em;
+        font-size: 2.0em;
+        line-height: 1;
+        transition: all 0.5s;
+    }
+    
+    #end-logo {
+        width: 30vw;
+    }
+    
+    .donate-us {
+        font-family: sans-serif;
+        margin: 80px auto 30px auto;
+        max-width: 800px;
+    }
+    
+    .donate-button {
+        font-family: sans-serif;
+        border-bottom: 0;
+        text-decoration: none;
+        cursor: pointer;
+        width: max-content;
+        margin: auto;
+        min-height: 50px;
+        padding: 10px;
+        color: white;
+        background-color: #ed6746;
+        display: flex;
+    }
+    
+    .donate-p {
+        font-family: sans-serif;
+        cursor: pointer;
+        color: white;
+        width: 100%;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin: auto !important;
+        font-weight: 600;
     }
