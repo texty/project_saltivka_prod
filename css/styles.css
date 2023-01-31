@@ -467,6 +467,8 @@
     }
     
     #viz-explainer {
+        font-family: 'proxima';
+        color: grey;
         margin-top: 3vh;
         margin-left: 25vw;
         width: 50%;

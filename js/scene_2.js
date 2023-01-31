@@ -186,36 +186,33 @@ window.onload = function() {
             this.pickedObject = null;
             this.pickedObjectSavedColor = 0;
         }
-        pick(normalizedPosition, scene, camera, time) {
-            // restore the color if there is a picked object
+        pick(normalizedPosition, scene, camera) {
+            console.log('pick')
+                // this.pickedObject = undefined;
             if (this.pickedObject) {
-                this.pickedObject.material.emissive.setHex(this.pickedObjectSavedColor);
+                // console.log(this.pickedObject.material.emissive.getHex())
+                this.pickedObject.material.emissive.setHex(0);
+                // this.pickedObject.material.emissive.setHex(this.pickedObjectSavedColor);
                 this.pickedObject = undefined;
             }
-            console.log('pick')
-                // cast a ray through the frustum
+
             this.raycaster.setFromCamera(normalizedPosition, camera);
-            // get the list of objects the ray intersected
 
-            try {
-                var for_intersected = []
-                for (let step = 0; step < 67; step++) {
-                    for_intersected.push(scene.children[2].children[step])
-                }
-                const intersectedObjects = this.raycaster.intersectObjects(for_intersected);
-                if (intersectedObjects.length) {
-                    // time = 1
-                    // pick the first object. It's the closest one
-                    this.pickedObject = intersectedObjects[0].object;
-                    metadata(this.pickedObject.userData)
-                        // save its color
-                    this.pickedObjectSavedColor = this.pickedObject.material.emissive.getHex();
-                    // set its emissive color to flashing red/yellow
-                    // this.pickedObject.material.emissive.setHex((time * 50) % 2 > 1 ? 0xFFFF00 : 0xFF0000);
-                    this.pickedObject.material.emissive.setHex(0xb16976);
-                }
-            } catch {}
+            var for_intersected = []
 
+            for (let step = 0; step < 67; step++) {
+                for_intersected.push(scene.children[2].children[step])
+            }
+
+            const intersectedObjects = this.raycaster.intersectObjects(for_intersected);
+            console.log(intersectedObjects)
+            if (intersectedObjects.length) {
+                this.pickedObject = intersectedObjects[0].object;
+                metadata(this.pickedObject.userData)
+                this.pickedObjectSavedColor = this.pickedObject.material.emissive.getHex();
+                console.log(this.pickedObject.material.emissive.getHex())
+                this.pickedObject.material.emissive.setHex(0xb16976);
+            }
         }
     }
     const pickPosition = { x: 0, y: 0 };
@@ -224,20 +221,11 @@ window.onload = function() {
 
     // time
     function render() {
-        // console.log('render')
-        // time *= 0.0001; // convert to seconds;
-
         if (resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         }
-        // console.log(controls.getAzimuthAngle())
-        // cameraPole.rotation.y = time * .1;
-        // , time
-        // pickHelper.pick(pickPosition, scene, camera);
-        // console.log(camera.position)
-        // console.log(light.position)
         renderer.render(scene, camera);
 
         requestAnimationFrame(render);
@@ -245,7 +233,7 @@ window.onload = function() {
     requestAnimationFrame(render);
 
     function getCanvasRelativePosition(event) {
-        console.log(event)
+        // console.log(event)
         const rect = canvas.getBoundingClientRect();
         return {
             x: event.clientX - rect.left,
@@ -254,11 +242,12 @@ window.onload = function() {
     }
 
     function setPickPosition(event) {
-        pickHelper.pick(pickPosition, scene, camera);
-        console.log(event)
+
+        console.log(pickPosition)
         const pos = getCanvasRelativePosition(event);
         pickPosition.x = (pos.x / canvas.clientWidth) * 2 - 1;
         pickPosition.y = (pos.y / canvas.clientHeight) * -2 + 1; // note we flip Y
+        pickHelper.pick(pickPosition, scene, camera);
     }
 
     function clearPickPosition() {
@@ -272,31 +261,6 @@ window.onload = function() {
     // window.addEventListener('mousemove', setPickPosition);
     window.addEventListener('click', setPickPosition);
     // window.addEventListener('touchend', clearPickPosition);
-    window.addEventListener('mouseout', clearPickPosition);
-    window.addEventListener('mouseleave', clearPickPosition);
-
-    // window.addEventListener('touchstart', (event) => {
-    //     // prevent the window from scrolling
-    //     event.preventDefault();
-    //     setPickPosition(event.touches[0]);
-    // }, { passive: false });
-
-    // window.addEventListener('touchmove', (event) => {
-    //     setPickPosition(event.touches[0]);
-    // });
-
-    // window.addEventListener('touchend', clearPickPosition);
-
-    // function animate() {
-
-    //     requestAnimationFrame(animate);
-
-    //     // required if controls.enableDamping or controls.autoRotate are set to true
-    //     controls.update();
-
-    //     render()
-
-    //     renderer.render(scene, camera);
-
-    // }
+    // window.addEventListener('mouseout', clearPickPosition);
+    // window.addEventListener('mouseleave', clearPickPosition);
 }
