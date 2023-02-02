@@ -9,7 +9,7 @@
 	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.THREE = {}));
 })(this, (function (exports) { 'use strict';
 
-	const REVISION = '149dev';
+	const REVISION = '150dev';
 	const MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2 };
 	const TOUCH = { ROTATE: 0, PAN: 1, DOLLY_PAN: 2, DOLLY_ROTATE: 3 };
 	const CullFaceNone = 0;
@@ -23,7 +23,7 @@
 	const FrontSide = 0;
 	const BackSide = 1;
 	const DoubleSide = 2;
-	const TwoPassDoubleSide = 3;
+	const TwoPassDoubleSide = 2; // r149
 	const NoBlending = 0;
 	const NormalBlending = 1;
 	const AdditiveBlending = 2;
@@ -95,7 +95,6 @@
 	const UnsignedShort5551Type = 1018;
 	const UnsignedInt248Type = 1020;
 	const AlphaFormat = 1021;
-	const RGBFormat = 1022; // @deprecated since r137
 	const RGBAFormat = 1023;
 	const LuminanceFormat = 1024;
 	const LuminanceAlphaFormat = 1025;
@@ -578,28 +577,28 @@
 		__proto__: null,
 		DEG2RAD: DEG2RAD,
 		RAD2DEG: RAD2DEG,
-		generateUUID: generateUUID,
+		ceilPowerOfTwo: ceilPowerOfTwo,
 		clamp: clamp,
-		euclideanModulo: euclideanModulo,
-		mapLinear: mapLinear,
-		inverseLerp: inverseLerp,
-		lerp: lerp,
 		damp: damp,
+		degToRad: degToRad,
+		denormalize: denormalize,
+		euclideanModulo: euclideanModulo,
+		floorPowerOfTwo: floorPowerOfTwo,
+		generateUUID: generateUUID,
+		inverseLerp: inverseLerp,
+		isPowerOfTwo: isPowerOfTwo,
+		lerp: lerp,
+		mapLinear: mapLinear,
+		normalize: normalize,
 		pingpong: pingpong,
-		smoothstep: smoothstep,
-		smootherstep: smootherstep,
-		randInt: randInt,
+		radToDeg: radToDeg,
 		randFloat: randFloat,
 		randFloatSpread: randFloatSpread,
+		randInt: randInt,
 		seededRandom: seededRandom,
-		degToRad: degToRad,
-		radToDeg: radToDeg,
-		isPowerOfTwo: isPowerOfTwo,
-		ceilPowerOfTwo: ceilPowerOfTwo,
-		floorPowerOfTwo: floorPowerOfTwo,
 		setQuaternionFromProperEuler: setQuaternionFromProperEuler,
-		normalize: normalize,
-		denormalize: denormalize
+		smootherstep: smootherstep,
+		smoothstep: smoothstep
 	});
 
 	class Vector2 {
@@ -7401,14 +7400,6 @@
 
 		}
 
-		// @deprecated since r138, 02cf0df1cb4575d5842fef9c85bb5a89fe020d53
-
-		toVector3() {
-
-			console.error( 'THREE.Euler: .toVector3() has been removed. Use Vector3.setFromEuler() instead' );
-
-		}
-
 	}
 
 	Euler.DEFAULT_ORDER = 'XYZ';
@@ -8789,6 +8780,7 @@
 
 			this.alphaToCoverage = false;
 			this.premultipliedAlpha = false;
+			this.forceSinglePass = false;
 
 			this.visible = true;
 
@@ -9070,6 +9062,7 @@
 			if ( this.alphaTest > 0 ) data.alphaTest = this.alphaTest;
 			if ( this.alphaToCoverage === true ) data.alphaToCoverage = this.alphaToCoverage;
 			if ( this.premultipliedAlpha === true ) data.premultipliedAlpha = this.premultipliedAlpha;
+			if ( this.forceSinglePass === true ) data.forceSinglePass = this.forceSinglePass;
 
 			if ( this.wireframe === true ) data.wireframe = this.wireframe;
 			if ( this.wireframeLinewidth > 1 ) data.wireframeLinewidth = this.wireframeLinewidth;
@@ -9190,6 +9183,7 @@
 			this.alphaTest = source.alphaTest;
 			this.alphaToCoverage = source.alphaToCoverage;
 			this.premultipliedAlpha = source.premultipliedAlpha;
+			this.forceSinglePass = source.forceSinglePass;
 
 			this.visible = source.visible;
 
@@ -13078,7 +13072,7 @@
 
 	var shadowmap_pars_vertex = "#if NUM_SPOT_LIGHT_COORDS > 0\n  uniform mat4 spotLightMatrix[ NUM_SPOT_LIGHT_COORDS ];\n  varying vec4 vSpotLightCoord[ NUM_SPOT_LIGHT_COORDS ];\n#endif\n#ifdef USE_SHADOWMAP\n\t#if NUM_DIR_LIGHT_SHADOWS > 0\n\t\tuniform mat4 directionalShadowMatrix[ NUM_DIR_LIGHT_SHADOWS ];\n\t\tvarying vec4 vDirectionalShadowCoord[ NUM_DIR_LIGHT_SHADOWS ];\n\t\tstruct DirectionalLightShadow {\n\t\t\tfloat shadowBias;\n\t\t\tfloat shadowNormalBias;\n\t\t\tfloat shadowRadius;\n\t\t\tvec2 shadowMapSize;\n\t\t};\n\t\tuniform DirectionalLightShadow directionalLightShadows[ NUM_DIR_LIGHT_SHADOWS ];\n\t#endif\n\t#if NUM_SPOT_LIGHT_SHADOWS > 0\n\t\tstruct SpotLightShadow {\n\t\t\tfloat shadowBias;\n\t\t\tfloat shadowNormalBias;\n\t\t\tfloat shadowRadius;\n\t\t\tvec2 shadowMapSize;\n\t\t};\n\t\tuniform SpotLightShadow spotLightShadows[ NUM_SPOT_LIGHT_SHADOWS ];\n\t#endif\n\t#if NUM_POINT_LIGHT_SHADOWS > 0\n\t\tuniform mat4 pointShadowMatrix[ NUM_POINT_LIGHT_SHADOWS ];\n\t\tvarying vec4 vPointShadowCoord[ NUM_POINT_LIGHT_SHADOWS ];\n\t\tstruct PointLightShadow {\n\t\t\tfloat shadowBias;\n\t\t\tfloat shadowNormalBias;\n\t\t\tfloat shadowRadius;\n\t\t\tvec2 shadowMapSize;\n\t\t\tfloat shadowCameraNear;\n\t\t\tfloat shadowCameraFar;\n\t\t};\n\t\tuniform PointLightShadow pointLightShadows[ NUM_POINT_LIGHT_SHADOWS ];\n\t#endif\n#endif";
 
-	var shadowmap_vertex = "#if defined( USE_SHADOWMAP ) || ( NUM_SPOT_LIGHT_COORDS > 0 )\n\t#if NUM_DIR_LIGHT_SHADOWS > 0 || NUM_SPOT_LIGHT_COORDS > 0 || NUM_POINT_LIGHT_SHADOWS > 0\n\t\tvec3 shadowWorldNormal = inverseTransformDirection( transformedNormal, viewMatrix );\n\t\tvec4 shadowWorldPosition;\n\t#endif\n\t#if NUM_DIR_LIGHT_SHADOWS > 0\n\t#pragma unroll_loop_start\n\tfor ( int i = 0; i < NUM_DIR_LIGHT_SHADOWS; i ++ ) {\n\t\tshadowWorldPosition = worldPosition + vec4( shadowWorldNormal * directionalLightShadows[ i ].shadowNormalBias, 0 );\n\t\tvDirectionalShadowCoord[ i ] = directionalShadowMatrix[ i ] * shadowWorldPosition;\n\t}\n\t#pragma unroll_loop_end\n\t#endif\n\t#if NUM_SPOT_LIGHT_COORDS > 0\n\t#pragma unroll_loop_start\n\tfor ( int i = 0; i < NUM_SPOT_LIGHT_COORDS; i ++ ) {\n\t\tshadowWorldPosition = worldPosition;\n\t\t#if ( defined( USE_SHADOWMAP ) && UNROLLED_LOOP_INDEX < NUM_SPOT_LIGHT_SHADOWS )\n\t\t\tshadowWorldPosition.xyz += shadowWorldNormal * spotLightShadows[ i ].shadowNormalBias;\n\t\t#endif\n\t\tvSpotLightCoord[ i ] = spotLightMatrix[ i ] * shadowWorldPosition;\n\t}\n\t#pragma unroll_loop_end\n\t#endif\n\t#if NUM_POINT_LIGHT_SHADOWS > 0\n\t#pragma unroll_loop_start\n\tfor ( int i = 0; i < NUM_POINT_LIGHT_SHADOWS; i ++ ) {\n\t\tshadowWorldPosition = worldPosition + vec4( shadowWorldNormal * pointLightShadows[ i ].shadowNormalBias, 0 );\n\t\tvPointShadowCoord[ i ] = pointShadowMatrix[ i ] * shadowWorldPosition;\n\t}\n\t#pragma unroll_loop_end\n\t#endif\n#endif";
+	var shadowmap_vertex = "#if ( defined( USE_SHADOWMAP ) && ( NUM_DIR_LIGHT_SHADOWS > 0 || NUM_POINT_LIGHT_SHADOWS > 0 ) ) || ( NUM_SPOT_LIGHT_COORDS > 0 )\n\tvec3 shadowWorldNormal = inverseTransformDirection( transformedNormal, viewMatrix );\n\tvec4 shadowWorldPosition;\n#endif\n#if defined( USE_SHADOWMAP )\n\t#if NUM_DIR_LIGHT_SHADOWS > 0\n\t\t#pragma unroll_loop_start\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHT_SHADOWS; i ++ ) {\n\t\t\tshadowWorldPosition = worldPosition + vec4( shadowWorldNormal * directionalLightShadows[ i ].shadowNormalBias, 0 );\n\t\t\tvDirectionalShadowCoord[ i ] = directionalShadowMatrix[ i ] * shadowWorldPosition;\n\t\t}\n\t\t#pragma unroll_loop_end\n\t#endif\n\t#if NUM_POINT_LIGHT_SHADOWS > 0\n\t\t#pragma unroll_loop_start\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHT_SHADOWS; i ++ ) {\n\t\t\tshadowWorldPosition = worldPosition + vec4( shadowWorldNormal * pointLightShadows[ i ].shadowNormalBias, 0 );\n\t\t\tvPointShadowCoord[ i ] = pointShadowMatrix[ i ] * shadowWorldPosition;\n\t\t}\n\t\t#pragma unroll_loop_end\n\t#endif\n#endif\n#if NUM_SPOT_LIGHT_COORDS > 0\n\t#pragma unroll_loop_start\n\tfor ( int i = 0; i < NUM_SPOT_LIGHT_COORDS; i ++ ) {\n\t\tshadowWorldPosition = worldPosition;\n\t\t#if ( defined( USE_SHADOWMAP ) && UNROLLED_LOOP_INDEX < NUM_SPOT_LIGHT_SHADOWS )\n\t\t\tshadowWorldPosition.xyz += shadowWorldNormal * spotLightShadows[ i ].shadowNormalBias;\n\t\t#endif\n\t\tvSpotLightCoord[ i ] = spotLightMatrix[ i ] * shadowWorldPosition;\n\t}\n\t#pragma unroll_loop_end\n#endif";
 
 	var shadowmask_pars_fragment = "float getShadowMask() {\n\tfloat shadow = 1.0;\n\t#ifdef USE_SHADOWMAP\n\t#if NUM_DIR_LIGHT_SHADOWS > 0\n\tDirectionalLightShadow directionalLight;\n\t#pragma unroll_loop_start\n\tfor ( int i = 0; i < NUM_DIR_LIGHT_SHADOWS; i ++ ) {\n\t\tdirectionalLight = directionalLightShadows[ i ];\n\t\tshadow *= receiveShadow ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t}\n\t#pragma unroll_loop_end\n\t#endif\n\t#if NUM_SPOT_LIGHT_SHADOWS > 0\n\tSpotLightShadow spotLight;\n\t#pragma unroll_loop_start\n\tfor ( int i = 0; i < NUM_SPOT_LIGHT_SHADOWS; i ++ ) {\n\t\tspotLight = spotLightShadows[ i ];\n\t\tshadow *= receiveShadow ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotLightCoord[ i ] ) : 1.0;\n\t}\n\t#pragma unroll_loop_end\n\t#endif\n\t#if NUM_POINT_LIGHT_SHADOWS > 0\n\tPointLightShadow pointLight;\n\t#pragma unroll_loop_start\n\tfor ( int i = 0; i < NUM_POINT_LIGHT_SHADOWS; i ++ ) {\n\t\tpointLight = pointLightShadows[ i ];\n\t\tshadow *= receiveShadow ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ], pointLight.shadowCameraNear, pointLight.shadowCameraFar ) : 1.0;\n\t}\n\t#pragma unroll_loop_end\n\t#endif\n\t#endif\n\treturn shadow;\n}";
 
@@ -14837,8 +14831,7 @@
 
 		}
 
-		const isWebGL2 = ( typeof WebGL2RenderingContext !== 'undefined' && gl instanceof WebGL2RenderingContext ) ||
-			( typeof WebGL2ComputeRenderingContext !== 'undefined' && gl instanceof WebGL2ComputeRenderingContext );
+		const isWebGL2 = typeof WebGL2RenderingContext !== 'undefined' && gl instanceof WebGL2RenderingContext;
 
 		let precision = parameters.precision !== undefined ? parameters.precision : 'highp';
 		const maxPrecision = getMaxPrecision( precision );
@@ -14920,7 +14913,7 @@
 		this.numPlanes = 0;
 		this.numIntersection = 0;
 
-		this.init = function ( planes, enableLocalClipping, camera ) {
+		this.init = function ( planes, enableLocalClipping ) {
 
 			const enabled =
 				planes.length !== 0 ||
@@ -14932,7 +14925,6 @@
 
 			localClippingEnabled = enableLocalClipping;
 
-			globalState = projectPlanes( planes, camera, 0 );
 			numGlobalPlanes = planes.length;
 
 			return enabled;
@@ -14949,7 +14941,12 @@
 		this.endShadows = function () {
 
 			renderingShadows = false;
-			resetGlobalState();
+
+		};
+
+		this.setGlobalState = function ( planes, camera ) {
+
+			globalState = projectPlanes( planes, camera, 0 );
 
 		};
 
@@ -15530,7 +15527,7 @@
 
 			const cubeUVRenderTarget = _createRenderTarget( width, height, params );
 
-			if ( this._pingPongRenderTarget === null || this._pingPongRenderTarget.width !== width ) {
+			if ( this._pingPongRenderTarget === null || this._pingPongRenderTarget.width !== width || this._pingPongRenderTarget.height !== height ) {
 
 				if ( this._pingPongRenderTarget !== null ) {
 
@@ -20845,7 +20842,7 @@
 
 			_maxTextureSize = _capabilities.maxTextureSize;
 
-		const shadowSide = { 0: BackSide, 1: FrontSide, 2: DoubleSide };
+		const shadowSide = { [ FrontSide ]: BackSide, [ BackSide ]: FrontSide, [ DoubleSide ]: DoubleSide };
 
 		const shadowMaterialVertical = new ShaderMaterial( {
 			defines: {
@@ -24514,15 +24511,6 @@
 			if ( p === DepthFormat ) return gl.DEPTH_COMPONENT;
 			if ( p === DepthStencilFormat ) return gl.DEPTH_STENCIL;
 
-			// @deprecated since r137
-
-			if ( p === RGBFormat ) {
-
-				console.warn( 'THREE.WebGLRenderer: THREE.RGBFormat has been removed. Use THREE.RGBAFormat instead. https://github.com/mrdoob/three.js/pull/23228' );
-				return gl.RGBA;
-
-			}
-
 			// WebGL 1 sRGB fallback
 
 			if ( p === _SRGBAFormat ) {
@@ -25161,6 +25149,8 @@
 
 			let referenceSpace = null;
 			let referenceSpaceType = 'local-floor';
+			// Set default foveation to maximum.
+			let foveation = 1.0;
 			let customReferenceSpace = null;
 
 			let pose = null;
@@ -25470,8 +25460,7 @@
 
 					newRenderTarget.isXRRenderTarget = true; // TODO Remove this when possible, see #23278
 
-					// Set foveation to maximum.
-					this.setFoveation( 1.0 );
+					this.setFoveation( foveation );
 
 					customReferenceSpace = null;
 					referenceSpace = await session.requestReferenceSpace( referenceSpaceType );
@@ -25700,36 +25689,32 @@
 
 			this.getFoveation = function () {
 
-				if ( glProjLayer !== null ) {
+				if ( glProjLayer === null && glBaseLayer === null ) {
 
-					return glProjLayer.fixedFoveation;
-
-				}
-
-				if ( glBaseLayer !== null ) {
-
-					return glBaseLayer.fixedFoveation;
+					return undefined;
 
 				}
 
-				return undefined;
+				return foveation;
 
 			};
 
-			this.setFoveation = function ( foveation ) {
+			this.setFoveation = function ( value ) {
 
 				// 0 = no foveation = full resolution
 				// 1 = maximum foveation = the edges render at lower resolution
 
+				foveation = value;
+
 				if ( glProjLayer !== null ) {
 
-					glProjLayer.fixedFoveation = foveation;
+					glProjLayer.fixedFoveation = value;
 
 				}
 
 				if ( glBaseLayer !== null && glBaseLayer.fixedFoveation !== undefined ) {
 
-					glBaseLayer.fixedFoveation = foveation;
+					glBaseLayer.fixedFoveation = value;
 
 				}
 
@@ -27794,7 +27779,7 @@
 
 			function prepare( material, scene, object ) {
 
-				if ( material.transparent === true && material.side === TwoPassDoubleSide ) {
+				if ( material.transparent === true && material.side === DoubleSide && material.forceSinglePass === false ) {
 
 					material.side = BackSide;
 					material.needsUpdate = true;
@@ -27804,7 +27789,7 @@
 					material.needsUpdate = true;
 					getProgram( material, scene, object );
 
-					material.side = TwoPassDoubleSide;
+					material.side = DoubleSide;
 
 				} else {
 
@@ -27948,7 +27933,7 @@
 			_frustum.setFromProjectionMatrix( _projScreenMatrix );
 
 			_localClippingEnabled = this.localClippingEnabled;
-			_clippingEnabled = clipping.init( this.clippingPlanes, _localClippingEnabled, camera );
+			_clippingEnabled = clipping.init( this.clippingPlanes, _localClippingEnabled );
 
 			currentRenderList = renderLists.get( scene, renderListStack.length );
 			currentRenderList.init();
@@ -28177,6 +28162,8 @@
 
 			currentRenderState.setupLightsView( camera );
 
+			if ( _clippingEnabled === true ) clipping.setGlobalState( _this.clippingPlanes, camera );
+
 			if ( transmissiveObjects.length > 0 ) renderTransmissionPass( opaqueObjects, scene, camera );
 
 			if ( viewport ) state.viewport( _currentViewport.copy( viewport ) );
@@ -28276,7 +28263,7 @@
 
 			material.onBeforeRender( _this, scene, camera, geometry, object, group );
 
-			if ( material.transparent === true && material.side === TwoPassDoubleSide ) {
+			if ( material.transparent === true && material.side === DoubleSide && material.forceSinglePass === false ) {
 
 				material.side = BackSide;
 				material.needsUpdate = true;
@@ -28286,7 +28273,7 @@
 				material.needsUpdate = true;
 				_this.renderBufferDirect( camera, scene, geometry, material, object, group );
 
-				material.side = TwoPassDoubleSide;
+				material.side = DoubleSide;
 
 			} else {
 
@@ -38553,12 +38540,12 @@
 		__proto__: null,
 		arraySlice: arraySlice,
 		convertArray: convertArray,
-		isTypedArray: isTypedArray,
-		getKeyframeOrder: getKeyframeOrder,
-		sortedArray: sortedArray,
 		flattenJSON: flattenJSON,
-		subclip: subclip,
-		makeClipAdditive: makeClipAdditive
+		getKeyframeOrder: getKeyframeOrder,
+		isTypedArray: isTypedArray,
+		makeClipAdditive: makeClipAdditive,
+		sortedArray: sortedArray,
+		subclip: subclip
 	});
 
 	/**
@@ -42001,6 +41988,7 @@
 
 			if ( json.alphaToCoverage !== undefined ) material.alphaToCoverage = json.alphaToCoverage;
 			if ( json.premultipliedAlpha !== undefined ) material.premultipliedAlpha = json.premultipliedAlpha;
+			if ( json.forceSinglePass !== undefined ) material.forceSinglePass = json.forceSinglePass;
 
 			if ( json.visible !== undefined ) material.visible = json.visible;
 
@@ -44229,8 +44217,13 @@
 
 			this._progress = 0;
 
-			this.source.stop();
-			this.source.onended = null;
+			if ( this.source !== null ) {
+
+				this.source.stop();
+				this.source.onended = null;
+
+			}
+
 			this.isPlaying = false;
 
 			return this;
@@ -45043,7 +45036,7 @@
 			this.path = path;
 			this.parsedPath = parsedPath || PropertyBinding.parseTrackName( path );
 
-			this.node = PropertyBinding.findNode( rootNode, this.parsedPath.nodeName ) || rootNode;
+			this.node = PropertyBinding.findNode( rootNode, this.parsedPath.nodeName );
 
 			this.rootNode = rootNode;
 
@@ -45359,7 +45352,7 @@
 
 			if ( ! targetObject ) {
 
-				targetObject = PropertyBinding.findNode( this.rootNode, parsedPath.nodeName ) || this.rootNode;
+				targetObject = PropertyBinding.findNode( this.rootNode, parsedPath.nodeName );
 
 				this.node = targetObject;
 
@@ -49925,57 +49918,9 @@
 
 	var DataUtils = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		toHalfFloat: toHalfFloat,
-		fromHalfFloat: fromHalfFloat
+		fromHalfFloat: fromHalfFloat,
+		toHalfFloat: toHalfFloat
 	});
-
-	// r134, d65e0af06644fe5a84a6fc0e372f4318f95a04c0
-
-	function ImmediateRenderObject() {
-
-		console.error( 'THREE.ImmediateRenderObject has been removed.' );
-
-	}
-
-	// r138, 48b05d3500acc084df50be9b4c90781ad9b8cb17
-
-	class WebGLMultisampleRenderTarget extends WebGLRenderTarget {
-
-		constructor( width, height, options ) {
-
-			console.error( 'THREE.WebGLMultisampleRenderTarget has been removed. Use a normal render target and set the "samples" property to greater 0 to enable multisampling.' );
-			super( width, height, options );
-			this.samples = 4;
-
-		}
-
-	}
-
-	// r138, f9cd9cab03b7b64244e304900a3a2eeaa3a588ce
-
-	class DataTexture2DArray extends DataArrayTexture {
-
-		constructor( data, width, height, depth ) {
-
-			console.warn( 'THREE.DataTexture2DArray has been renamed to DataArrayTexture.' );
-			super( data, width, height, depth );
-
-		}
-
-	}
-
-	// r138, f9cd9cab03b7b64244e304900a3a2eeaa3a588ce
-
-	class DataTexture3D extends Data3DTexture {
-
-		constructor( data, width, height, depth ) {
-
-			console.warn( 'THREE.DataTexture3D has been renamed to Data3DTexture.' );
-			super( data, width, height, depth );
-
-		}
-
-	}
 
 	// r144
 
@@ -50329,8 +50274,6 @@
 	exports.Data3DTexture = Data3DTexture;
 	exports.DataArrayTexture = DataArrayTexture;
 	exports.DataTexture = DataTexture;
-	exports.DataTexture2DArray = DataTexture2DArray;
-	exports.DataTexture3D = DataTexture3D;
 	exports.DataTextureLoader = DataTextureLoader;
 	exports.DataUtils = DataUtils;
 	exports.DecrementStencilOp = DecrementStencilOp;
@@ -50388,7 +50331,6 @@
 	exports.ImageBitmapLoader = ImageBitmapLoader;
 	exports.ImageLoader = ImageLoader;
 	exports.ImageUtils = ImageUtils;
-	exports.ImmediateRenderObject = ImmediateRenderObject;
 	exports.IncrementStencilOp = IncrementStencilOp;
 	exports.IncrementWrapStencilOp = IncrementWrapStencilOp;
 	exports.InstancedBufferAttribute = InstancedBufferAttribute;
@@ -50543,7 +50485,6 @@
 	exports.RGBA_S3TC_DXT1_Format = RGBA_S3TC_DXT1_Format;
 	exports.RGBA_S3TC_DXT3_Format = RGBA_S3TC_DXT3_Format;
 	exports.RGBA_S3TC_DXT5_Format = RGBA_S3TC_DXT5_Format;
-	exports.RGBFormat = RGBFormat;
 	exports.RGB_ETC1_Format = RGB_ETC1_Format;
 	exports.RGB_ETC2_Format = RGB_ETC2_Format;
 	exports.RGB_PVRTC_2BPPV1_Format = RGB_PVRTC_2BPPV1_Format;
@@ -50647,7 +50588,6 @@
 	exports.WebGLArrayRenderTarget = WebGLArrayRenderTarget;
 	exports.WebGLCubeRenderTarget = WebGLCubeRenderTarget;
 	exports.WebGLMultipleRenderTargets = WebGLMultipleRenderTargets;
-	exports.WebGLMultisampleRenderTarget = WebGLMultisampleRenderTarget;
 	exports.WebGLRenderTarget = WebGLRenderTarget;
 	exports.WebGLRenderer = WebGLRenderer;
 	exports.WebGLUtils = WebGLUtils;
