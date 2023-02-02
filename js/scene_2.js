@@ -1,6 +1,6 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'GLTFLoader';
-import { OrbitControls } from 'OrbitControls';
+import * as THREE from '../lib/three.module.js';
+import { GLTFLoader } from '../lib/GLTFLoader.js';
+import { OrbitControls } from '../lib/OrbitControls.js';
 // import { DRACOLoader } from 'DRACOLoader';
 window.onload = function() {
 
