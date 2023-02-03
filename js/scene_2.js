@@ -9,9 +9,9 @@ window.onload = function() {
         console.log(userData.properties)
         d3.select('#infoboard').html(
             // 'id ' + userData.properties[0] + '<br/>' +
-            '<span class="info-head">Адреса:</span> <span class="info-info">' + userData.properties[9] + '</span><br>' +
-            '<span class="info-head">Категорія:</span> <span class="info-info">' + userData.properties[21] + '</span><br>' +
-            '<span class="info-head">Опис:</span> <span class="info-info">' + userData.properties[24] + '</span><br>' +
+            '<span class="info-head">Адреса:</span><br> <span class="info-info">' + userData.properties[9] + '</span><br>' +
+            '<span class="info-head">Категорія:</span><br> <span class="info-info">' + userData.properties[21] + '</span><br>' +
+            '<span class="info-head">Опис:</span><br> <span class="info-info">' + userData.properties[24] + '</span><br>' +
             '<video class="vid-info"width="100%" autoplay loop muted poster="./photo/' + userData.properties[23] + '"><source src="./video_s/' + userData.properties[18] +
             '" type="video/mp4"></video>' + '<br>'
             // 'photo ' + userData.properties[23] + '<br>'
@@ -23,6 +23,9 @@ window.onload = function() {
 
 
     const canvas = document.getElementById('container');
+    // const drawing = new Image();
+    // drawing.src = "./pic/rose.png"
+    // canvas.drawImage(drawing, 0, 0);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(container.getBoundingClientRect().width, container.getBoundingClientRect().height);
@@ -32,10 +35,25 @@ window.onload = function() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     canvas.appendChild(renderer.domElement);
 
+    // const drawing = new Image();
+    // drawing.src = "./pic/rose.png"
+    console.log(canvas.children[0])
+        // canvas.children[0].drawImage(drawing, 0, 0);
+
     var scene = new THREE.Scene()
     scene.background = new THREE.Color(0xffffff);
     const camera = new THREE.PerspectiveCamera(45, container.getBoundingClientRect().width / container.getBoundingClientRect().height, 1, 200);
-    camera.position.set(-16.62999593223956, 18.931333503926282, -44.39571128567188);
+
+    if (window.screen.width <= 1023) {
+        camera.position.set(-16.766358626702264, 17.89839741567356, -44.75974738274429);
+    } else {
+        camera.position.set(-10.14000151042189, 8.52496485873762, -27.06991518983146);
+    }
+
+
+    // -10.14000151042189, y: 8.52496485873762, z: -27.06991518983146
+
+    // -10.14000151042189, y: 8.52496485873762, z: -27.06991518983146
 
     // -16.766358626702264, y: 17.89839741567356, z: -44.75974738274429
 
@@ -88,19 +106,28 @@ window.onload = function() {
 
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    // controls.target.set(0, 0.5, 0);
     controls.target.set(0, 0.5, 0);
     controls.update();
     controls.enablePan = true;
     controls.enableDamping = true;
     // обмежуємо зум камери на мінімальний та максимальний
-    controls.minDistance = 30
-    controls.maxDistance = 60
+
+    if (window.screen.width <= 1023) {
+        controls.minDistance = 30
+        controls.maxDistance = 70
+    } else {
+        controls.minDistance = 30
+        controls.maxDistance = 30
+    }
+    // controls.minDistance = 30
+    // controls.maxDistance = 30
 
     // controls.minPolarAngle = 0.7 
     // controls.maxPolarAngle = 1.3
 
-    controls.minPolarAngle = 1.2
-    controls.maxPolarAngle = 1.2
+    controls.minPolarAngle = 1.3
+    controls.maxPolarAngle = 1.3
 
     // controls.maxAzimuthAngle = 3.7
     // controls.minAzimuthAngle = 3.4
@@ -130,6 +157,7 @@ window.onload = function() {
             gltf.asset; // Object
 
             // animate();
+
 
             console.log(scene)
             scene.children[2].children[68].castShadow = true
@@ -191,7 +219,8 @@ window.onload = function() {
                 // this.pickedObject = undefined;
             if (this.pickedObject) {
                 // console.log(this.pickedObject.material.emissive.getHex())
-                this.pickedObject.material.emissive.setHex(0);
+                // this.pickedObject.material.emissive.setHex(0);
+                this.pickedObject.material.color.setHex(0xc76163);
                 // this.pickedObject.material.emissive.setHex(this.pickedObjectSavedColor);
                 this.pickedObject = undefined;
             }
@@ -210,8 +239,10 @@ window.onload = function() {
                 this.pickedObject = intersectedObjects[0].object;
                 metadata(this.pickedObject.userData)
                 this.pickedObjectSavedColor = this.pickedObject.material.emissive.getHex();
-                console.log(this.pickedObject.material.emissive.getHex())
-                this.pickedObject.material.emissive.setHex(0xb16976);
+                // console.log(this.pickedObject.material.emissive.getHex())
+                // this.pickedObject.material.emissive.setHex(0x441821);
+                this.pickedObject.material.color.setHex(0x6c131f);
+                // console.log(this.pickedObject.material.emissive.getHex())
             }
         }
     }
@@ -227,6 +258,8 @@ window.onload = function() {
             camera.updateProjectionMatrix();
         }
         renderer.render(scene, camera);
+
+        // console.log(camera.position)
 
         requestAnimationFrame(render);
     }
