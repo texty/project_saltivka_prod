@@ -37,6 +37,8 @@
 
 
     <title>Розстріляна, але жива Салтівка.</title>
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://kit.fontawesome.com/043a4ca43b.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/styles.css">
@@ -184,7 +186,8 @@
             <div id='main-table'>
                 <div id='father_container'>
                     <img src="./pic/rose.png" class="rose">
-                    <div id='container'></div>
+                    <!-- <div id='container'></div> -->
+                    <div id='map'></div>
                 </div>
                 <div id='infoboard'>
                     <p id='viz-explainer'>Візуалізація інтерактивна, при кліку (або тапі для мобільних пристроїв) на будівлю - можна дізнатись більше. <span style="color:#d9989a">Червоним</span> позначені будівлі, які постраждали.
@@ -472,7 +475,7 @@
     </article>
     <!-- <script src="js/three.js"></script> -->
     <!-- <script src="./js/scene_2.js"></script> -->
-    <script type="module" src="./js/scene_2.js"></script>
+    <script type="module" src="./js/map.js"></script>
 </body>
 
 </html>
