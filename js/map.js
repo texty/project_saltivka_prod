@@ -38,24 +38,36 @@ map.on('load', () => {
 
     map.addSource('highlighted', {
         'type': 'geojson',
-        'data': './data/damaged_building_2.geojson'
+        'data': './data/damaged_building_2.geojson',
+        'generateId': true
     });
     map.addLayer({
         'id': 'red',
         'type': 'fill-extrusion',
         'source': 'highlighted',
         'paint': {
-            'fill-extrusion-color': "#d3999a",
+            'fill-extrusion-color': [
+                'case', ['boolean', ['feature-state', 'click'], false],
+                '#8b2f42 ',
+                '#D3999A'
+            ],
             'fill-extrusion-height': ['get', 'level_heigt'],
             // 'fill-extrusion-base': ['get', 'base_height'],
             'fill-extrusion-opacity': 1
         }
     });
 });
-
+var clickedStateId = null;
 map.on("click", 'red', function(e) {
     console.log(e.features[0].properties)
 
+    if (e.features.length > 0) {
+        if (clickedStateId) {
+            map.setFeatureState({ source: 'highlighted', id: clickedStateId }, { click: false });
+        }
+        clickedStateId = e.features[0].id;
+        map.setFeatureState({ source: 'highlighted', id: clickedStateId }, { click: true });
+    }
     d3.select('#infoboard').html(
         // 'id ' + userData.properties[0] + '<br/>' +
         '<span class="info-head">Адреса:</span><br> <span class="info-info">' + e.features[0].properties['name'] + '</span><br>' +
